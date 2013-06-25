@@ -69,15 +69,15 @@ namespace ConstraintBones
             joint = pmx.Joint;              // joint    :Joint  | リスト
         }
 
-        public bool ExistsBone(IList<IPXBone> bone, string name)
+        public bool ExistsBone(string name)
         {
             return bone.Any(b => b.Name == name);
         }
-        public IPXBone FindBone(IList<IPXBone> bone, string name)
+        public IPXBone FindBone(string name)
         {
             return bone.FirstOrDefault(b => b.Name == name);
         }
-        public void ReplaceParentBone(IList<IPXBone> bone, IPXBone oldBone, IPXBone newBone)
+        public void ReplaceParentBone(IPXBone oldBone, IPXBone newBone)
         {
             // 多段元を親(or付与親)にしているボーンの親(or付与親)を全て変更
             foreach (var bx in bone)
@@ -90,7 +90,7 @@ namespace ConstraintBones
                     bx.AppendParent = newBone;
             }
         }
-        public bool InsertBoneBefore(IList<IPXBone> bone, string name, IPXBone newBone)
+        public bool InsertBoneBefore(string name, IPXBone newBone)
         {
             for (var i = 0; i < bone.Count; i++)
             {
@@ -100,7 +100,7 @@ namespace ConstraintBones
             }
             return false;
         }
-        public bool InsertBoneBefore(IList<IPXBone> bone, IPXBone targetBone, IPXBone newBone)
+        public bool InsertBoneBefore(IPXBone targetBone, IPXBone newBone)
         {
             for (var i = 0; i < bone.Count; i++)
             {
@@ -110,7 +110,7 @@ namespace ConstraintBones
             }
             return false;
         }
-        public bool InsertBoneAfter(IList<IPXBone> bone, string name, IPXBone newBone)
+        public bool InsertBoneAfter(string name, IPXBone newBone)
         {
             for (var i = 0; i < bone.Count; i++)
             {
@@ -120,7 +120,7 @@ namespace ConstraintBones
             }
             return false;
         }
-        public bool InsertBoneAfter(IList<IPXBone> bone, IPXBone targetBone, IPXBone newBone)
+        public bool InsertBoneAfter(IPXBone targetBone, IPXBone newBone)
         {
             for (var i = 0; i < bone.Count; i++)
             {
@@ -130,12 +130,12 @@ namespace ConstraintBones
             }
             return false;
         }
-        public bool Set_ToBone(IList<IPXBone> bone, string targetBone, string newBone)
+        public bool Set_ToBone(string targetBone, string newBone)
         {
             for (var i = 0; i < bone.Count; i++)
             {
                 if (bone[i].Name != targetBone) continue;
-                var bx = FindBone(bone, newBone);
+                var bx = FindBone(newBone);
                 if (bx == null) return false;
                 bone[i].ToOffset = new V3(0, 0, 0);
                 bone[i].ToBone = bx;
@@ -143,17 +143,63 @@ namespace ConstraintBones
             }
             return false;
         }
-        public bool Set_ParentBone(IList<IPXBone> bone, string targetBone, string newBone)
+        public bool Set_ParentBone(string targetBone, string newBone)
         {
             for (var i = 0; i < bone.Count; i++)
             {
                 if (bone[i].Name != targetBone) continue;
-                var bx = FindBone(bone, newBone);
+                var bx = FindBone(newBone);
                 if (bx == null) return false;
                 bone[i].Parent = bx;
                 return true;
             }
             return false;
+        }
+        public IPXBone CloneBone(IPXBone origBone, string newName)
+        {
+            var bx = (IPXBone)origBone.Clone();
+            bx.Name = newName;
+            return bx;
+        }
+        public IPXBone CloneBone(string origBoneName, string newName)
+        {
+            var bx = FindBone(origBoneName);
+            if (bx == null) return null;
+            bx = (IPXBone)bx.Clone();
+            bx.Name = newName;
+            return bx;
+        }
+        public IPXIKLink MakeIKLink(IPXBone targetBone, V3 low, V3 high)
+        {
+            return targetBone == null ? null : bdx.IKLink(targetBone, low, high);
+        }
+        public IPXIKLink MakeIKLink(IPXBone targetBone)
+        {
+            return targetBone == null ? null : bdx.IKLink(targetBone);
+        }
+        public IPXIKLink MakeIKLink(string targetBoneName, V3 low, V3 high)
+        {
+            var targetBone = FindBone(targetBoneName);
+            return targetBone == null ? null : bdx.IKLink(targetBone, low, high);
+        }
+        public IPXIKLink MakeIKLink(string targetBoneName)
+        {
+            var targetBone = FindBone(targetBoneName);
+            return targetBone == null ? null : bdx.IKLink(targetBone);
+        }
+        public bool AppendRotation(string targetBoneName, string linkBoneName, float ratio)
+        {
+            var targetBone = FindBone(targetBoneName);
+            var linkBone = FindBone(linkBoneName);
+            if (targetBone == null || linkBone == null) return false;
+            targetBone.IsAppendRotation = true;
+            targetBone.AppendParent = linkBone;
+            targetBone.AppendRatio = ratio;
+            return true;
+        }
+        public void AddBoneToNode(IPXNode targetNode, IPXBone targetBone)
+        {
+            targetNode.Items.Add(bdx.BoneNodeItem(targetBone));
         }
     }
 }

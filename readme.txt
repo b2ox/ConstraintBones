@@ -8,6 +8,7 @@
 
 	+ 足切IKボーン化
 	+ 腕切IKボーン化
+	+ イジケ式ボーン導入
 
 
 *足切IKボーン化
@@ -41,6 +42,26 @@ PACさんの足切り足IK構造( http://bowlroll.net/up/dl9050 )でやってる
 という一連の操作を行います。
 
 
+*イジケ式ボーン導入
+
+第2回九州MMD勉強会配布資料( http://bowlroll.net/up/dl20293 )
+イジケ独自ボーン導入法・腕切IK導入法.pdf 1,2ページ目相当の操作をプラグイン化したものです。
+頭連動ボーン、腕連動ボーン、呼吸ボーンをセットアップします。
+準標準ボーン追加プラグインで全ての親、グルーブ、上半身2などを作成してから実行すると、
+
+1.腰を多段化
+2.上半身から頭先までの5個のボーン列を複製
+3.上半身2+,頭+,頭先+からIK用のボーンを作成
+4.首から腕連動,呼吸ボーンを作成
+5.頭を多段化
+6.適宜連動設定を行う(説明面倒)
+7.追加したボーンは新規の表示枠に入れる
+
+という一連の操作を行います。
+
+呼吸ボーンの動作には頭IKと頭IK親1をz軸方向に微調整する必要があります。
+
+
 *ライセンス
 
 本プログラムはフリーウェアです。完全に無保証で提供されるものであり
@@ -64,3 +85,8 @@ Do What The Fuck You Want To Public License, Version 2 (WTFPL) および自ら�
    TERMS AND CONDITIONS FOR COPYING, DISTRIBUTION AND MODIFICATION
 
   0. You just DO WHAT THE FUCK YOU WANT TO.
+
+
+*ソースコード
+
+https://github.com/b2ox/ConstraintBones

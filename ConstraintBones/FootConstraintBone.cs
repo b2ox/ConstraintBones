@@ -33,27 +33,24 @@ namespace ConstraintBones
             {
                 InitVariables(args);
 
-                if (!ExistsBone(bone, "左足ＩＫ")) throw new Exception("足IKを作成してください");
-                if (!ExistsBone(bone, "左つま先ＩＫ")) throw new Exception("つま先IKを作成してください");
+                if (!ExistsBone("左足ＩＫ")) throw new Exception("足IKを作成してください");
+                if (!ExistsBone("左つま先ＩＫ")) throw new Exception("つま先IKを作成してください");
 
                 var LeftRight = new string[] { "左", "右" };
 
                 foreach (var b in LeftRight)
                 {
-                    var bx = FindBone(bone, b + "足");
+                    var bx = FindBone(b + "足");
                     if (bx == null) throw new Exception(b + "ボーンが見つかりません");
-                    var by = FindBone(bone, b + "ひざ");
+                    var by = FindBone(b + "ひざ");
                     if (by == null) throw new Exception(b + "ボーンが見つかりません");
-                    var bz = FindBone(bone, b + "足首");
+                    var bz = FindBone(b + "足首");
                     if (bz == null) throw new Exception(b + "ボーンが見つかりません");
 
                     // 足、ひざ、足首ボーンを複製
-                    var bx2 = (IPXBone)bx.Clone();
-                    bx2.Name += "+";
-                    var by2 = (IPXBone)by.Clone();
-                    by2.Name += "+";
-                    var bz2 = (IPXBone)bz.Clone();
-                    bz2.Name += "+";
+                    var bx2 = CloneBone(bx, bx.Name + "+");
+                    var by2 = CloneBone(by, by.Name + "+");
+                    var bz2 = CloneBone(bz, bz.Name + "+");
 
                     // 足+←ひざ+←足首+
                     bx2.ToOffset = new V3(0, 0, 0); bx2.ToBone = by2;
@@ -63,13 +60,13 @@ namespace ConstraintBones
                     bz2.Parent = by2;
 
                     // 全ての親←足首
-                    bz.Parent = FindBone(bone, "全ての親");
+                    bz.Parent = FindBone("全ての親");
                     bz.IsTranslation = true;
                     bz.IsLocalFrame = false;
                     bz.Name = b + "足IK親";
 
                     // 足首←足IK
-                    var bw = FindBone(bone, b + "足ＩＫ");
+                    var bw = FindBone(b + "足ＩＫ");
                     bw.Parent = bz;
                     bw.IK.Target = bz2;
                     for (var i = 0; i < bw.IK.Links.Count; i++)
@@ -87,7 +84,7 @@ namespace ConstraintBones
                     by.AppendRatio = 1;
 
                     // つま先IKの修正
-                    var bv = FindBone(bone, b + "つま先ＩＫ");
+                    var bv = FindBone(b + "つま先ＩＫ");
                     for (var i = 0; i < bv.IK.Links.Count; i++)
                     {
                         if (bv.IK.Links[i].Bone == bz) bv.IK.Links[i].Bone = bz2;
@@ -97,12 +94,12 @@ namespace ConstraintBones
                     bone.Remove(bx);
                     bone.Remove(by);
                     bone.Remove(bz);
-                    InsertBoneBefore(bone, bw, bx2);
-                    InsertBoneBefore(bone, bw, by2);
-                    InsertBoneBefore(bone, bw, bz2);
-                    InsertBoneBefore(bone, bw, bx);
-                    InsertBoneBefore(bone, bw, by);
-                    InsertBoneBefore(bone, bw, bz);
+                    InsertBoneBefore(bw, bx2);
+                    InsertBoneBefore(bw, by2);
+                    InsertBoneBefore(bw, bz2);
+                    InsertBoneBefore(bw, bx);
+                    InsertBoneBefore(bw, by);
+                    InsertBoneBefore(bw, bz);
 
                 }
 
