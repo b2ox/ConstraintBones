@@ -34,19 +34,20 @@ namespace ConstraintBones
                 InitVariables(args);
                 //----------------------------------------------
                 // 必須ボーンの存在確認
-                foreach (var s in new string[] { "全ての親", "センター", "グルーブ", "腰", "上半身", "上半身2", "首", "頭", "頭先" })
+                foreach (var s in new string[] { "全ての親", "センター", "グルーブ", "腰", "上半身", "上半身2", "首", "頭", "頭先", "右肩", "左肩" })
                     if (!ExistsBone(s)) throw new Exception(s + "ボーンがありません");
 
-                var nodeX = bdx.Node();
-                nodeX.Name = "イジケ式ボーン";
+                var nodeX = MakeNode("イジケ式ボーン操作用");
                 node.Add(nodeX);
+                var nodeY = MakeNode("イジケ式ボーン予備");
+                node.Add(nodeY);
 
                 // 腰の多段化
                 var bKoshi = FindBone("腰");
                 var bKoshiOya1 = CloneBone(bKoshi, "腰親1");
                 bKoshi.Parent = bKoshiOya1;
                 InsertBoneBefore(bKoshi, bKoshiOya1);
-                AddBoneToNode(nodeX, bKoshiOya1);
+                AddBoneToNode(nodeY, bKoshiOya1); // 予備枠に登録
 
                 // 上半身, 上半身2, 首, 頭, 頭先を複製
                 {
@@ -63,7 +64,7 @@ namespace ConstraintBones
                         }
                         InsertBoneAfter(bx, by);
                         bx = by;
-                        AddBoneToNode(nodeX, by);
+                        AddBoneToNode(nodeY, by); // 予備枠に登録
                     }
                 }
 
@@ -79,9 +80,9 @@ namespace ConstraintBones
                     InsertBoneAfter(bw, bx);
                     InsertBoneAfter(bx, by);
                     InsertBoneAfter(by, bz);
-                    AddBoneToNode(nodeX, bx);
-                    AddBoneToNode(nodeX, by);
-                    AddBoneToNode(nodeX, bz);
+                    AddBoneToNode(nodeY, bx); // 予備枠
+                    AddBoneToNode(nodeX, by); // 操作枠
+                    AddBoneToNode(nodeX, bz); // 操作枠
 
                     // 腰親1を上半身IK親1に連動
                     bKoshiOya1.IsAppendRotation = true;
@@ -114,20 +115,21 @@ namespace ConstraintBones
                     // 上半身2IK の設定
                     var kubi_ = FindBone("首+");
                     bz.Parent = by;
+                    bz.Position = kubi_.Position;
                     bz.IsIK = true;
                     bz.IsTranslation = true;
                     bz.IK.Target = kubi_;
                     bz.IK.Angle = 57.29578f;
                     bz.IK.LoopCount = 20;
                     bz.IK.Links.Clear();
-                    bz.IK.Links.Add(MakeIKLink(kubi_));
+                    bz.IK.Links.Add(MakeIKLink("上半身2+"));
 
                     // 首IK作成
                     bw = FindBone("頭+");
                     bx = CloneBone(bw, "首IK");
                     bx.Parent = bz;
                     InsertBoneAfter(bw, bx);
-                    AddBoneToNode(nodeX, bx);
+                    AddBoneToNode(nodeX, bx); // 操作枠
                     bx.IsIK = true;
                     bx.IsTranslation = true;
                     bx.IK.Target = bw;
@@ -143,13 +145,13 @@ namespace ConstraintBones
                     by.IsTranslation = true;
                     by.IsAppendTranslation = true;
                     InsertBoneAfter(bw, by);
-                    AddBoneToNode(nodeX, by);
+                    AddBoneToNode(nodeY, by); // 予備枠
 
                     // 頭IK
                     bz = CloneBone(bw, "頭IK");
                     bz.Parent = by;
                     InsertBoneAfter(by, bz);
-                    AddBoneToNode(nodeX, bz);
+                    AddBoneToNode(nodeX, bz); // 操作枠
                     bz.IsAppendTranslation = true;
                     bz.IsIK = true;
                     bz.IsTranslation = true;
@@ -161,7 +163,7 @@ namespace ConstraintBones
                     bz.IK.Links.Add(MakeIKLink("頭+"));
 
                     // 頭IK, 頭IK親1の位置調整
-                    var dz = new V3(0, 0, -0.1f);
+                    var dz = new V3(0, 0, -1f);
                     by.Position += dz;
                     bz.Position += dz;
                 }
@@ -174,14 +176,18 @@ namespace ConstraintBones
                     var bz = CloneBone(bx, "呼吸ボーン");
                     InsertBoneBefore(bx, by);
                     InsertBoneBefore(bx, bz);
-                    AddBoneToNode(nodeX, by);
-                    AddBoneToNode(nodeX, bz);
+                    AddBoneToNode(nodeX, by); // 操作枠
+                    AddBoneToNode(nodeX, bz); // 操作枠
                     by.Parent = bx.Parent;
                     bz.Parent = by;
                     bx.Parent = bz;
                     by.IsTranslation = true;
                     bz.IsTranslation = true;
                 }
+
+                // 肩の親を呼吸ボーンに変更
+                Set_ParentBone("左肩", "呼吸ボーン");
+                Set_ParentBone("右肩", "呼吸ボーン");
 
                 // 頭を複製し回転連動用,頭連動を作成
                 // 首←回転連動用←頭連動←頭
@@ -191,8 +197,8 @@ namespace ConstraintBones
                     var bz = CloneBone(bx, "頭連動");
                     InsertBoneBefore(bx, by);
                     InsertBoneBefore(bx, bz);
-                    AddBoneToNode(nodeX, by);
-                    AddBoneToNode(nodeX, bz);
+                    AddBoneToNode(nodeY, by); // 予備枠
+                    AddBoneToNode(nodeX, bz); // 操作枠
                     by.Parent = bx.Parent;
                     bz.Parent = by;
                     bx.Parent = bz;
@@ -208,6 +214,16 @@ namespace ConstraintBones
                 AppendRotation("頭IK親1", "腕連動ボーン", 1);
                 AppendRotation("頭IK", "呼吸ボーン", 5);
 
+                // ボーン順序の変更
+                MoveBoneBefore("頭先+", "頭先");
+                MoveBoneBefore("首", "左肩");
+                MoveBoneBefore("首", "右肩");
+
+                // 区切り用のダミーボーン作成
+                InsertBoneBefore("上半身+", MakeSeparatorBone("+++++体幹IK群+++++"));
+                InsertBoneBefore("上半身", MakeSeparatorBone("+++++上半身1・2腕連動・呼吸+++++"));
+                InsertBoneBefore("左肩", MakeSeparatorBone("+++++FK群+++++"));
+                
                 //----------------------------------------------
                 // 更新処理
                 // デフォルト設定ではフッタコードはOFF

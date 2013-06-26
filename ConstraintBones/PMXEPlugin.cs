@@ -130,12 +130,26 @@ namespace ConstraintBones
             }
             return false;
         }
-        public bool Set_ToBone(string targetBone, string newBone)
+        public bool MoveBoneBefore(string targetBoneName, string movingBoneName)
+        {
+            var mb = FindBone(movingBoneName);
+            if (mb == null) return false;
+            bone.Remove(mb);
+            return InsertBoneBefore(targetBoneName, mb);
+        }
+        public bool MoveBoneAfter(string targetBoneName, string movingBoneName)
+        {
+            var mb = FindBone(movingBoneName);
+            if (mb == null) return false;
+            bone.Remove(mb);
+            return InsertBoneAfter(targetBoneName, mb);
+        }
+        public bool Set_ToBone(string targetBoneName, string newBoneName)
         {
             for (var i = 0; i < bone.Count; i++)
             {
-                if (bone[i].Name != targetBone) continue;
-                var bx = FindBone(newBone);
+                if (bone[i].Name != targetBoneName) continue;
+                var bx = FindBone(newBoneName);
                 if (bx == null) return false;
                 bone[i].ToOffset = new V3(0, 0, 0);
                 bone[i].ToBone = bx;
@@ -143,12 +157,13 @@ namespace ConstraintBones
             }
             return false;
         }
-        public bool Set_ParentBone(string targetBone, string newBone)
+        // targetBoneのParentをnewBoneにする
+        public bool Set_ParentBone(string targetBoneName, string newBoneName)
         {
             for (var i = 0; i < bone.Count; i++)
             {
-                if (bone[i].Name != targetBone) continue;
-                var bx = FindBone(newBone);
+                if (bone[i].Name != targetBoneName) continue;
+                var bx = FindBone(newBoneName);
                 if (bx == null) return false;
                 bone[i].Parent = bx;
                 return true;
@@ -167,6 +182,21 @@ namespace ConstraintBones
             if (bx == null) return null;
             bx = (IPXBone)bx.Clone();
             bx.Name = newName;
+            return bx;
+        }
+        public IPXBone MakeBone(string boneName)
+        {
+            var bx = bdx.Bone();
+            bx.Name = boneName;
+            return bx;
+        }
+        // 区切り用の非表示・不操作ボーンを作成
+        public IPXBone MakeSeparatorBone(string boneName)
+        {
+            var bx = MakeBone(boneName);
+            bx.IsRotation = false;
+            bx.Controllable = false;
+            bx.Visible = false;
             return bx;
         }
         public IPXIKLink MakeIKLink(IPXBone targetBone, V3 low, V3 high)
@@ -197,9 +227,21 @@ namespace ConstraintBones
             targetBone.AppendRatio = ratio;
             return true;
         }
+        public IPXNode MakeNode(string nodeName)
+        {
+            var nd = bdx.Node();
+            nd.Name = nodeName;
+            return nd;
+        }
+        // ボーンを表示枠に追加
         public void AddBoneToNode(IPXNode targetNode, IPXBone targetBone)
         {
             targetNode.Items.Add(bdx.BoneNodeItem(targetBone));
+        }
+        public void AddBoneToNode(IPXNode targetNode, string targetBoneName)
+        {
+            var targetBone = FindBone(targetBoneName);
+            if (targetBone != null) AddBoneToNode(targetNode, targetBone);
         }
     }
 }
