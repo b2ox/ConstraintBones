@@ -37,6 +37,13 @@ namespace ConstraintBones
                 foreach (var s in new string[] { "全ての親", "センター", "グルーブ", "腰", "上半身", "上半身2", "首", "頭", "頭先", "右肩", "左肩" })
                     if (!ExistsBone(s)) throw new Exception(s + "ボーンがありません");
 
+                float headIKoffset = -1;
+                using (var nd = new NumDialog("頭IKの位置調整", -10m, 10m, (decimal)headIKoffset))
+                {
+                    if (nd.ShowDialog() != DialogResult.OK) return;
+                    headIKoffset = (float)nd.Value;
+                }
+
                 var nodeX = MakeNode("イジケ式ボーン操作用");
                 node.Add(nodeX);
                 var nodeY = MakeNode("イジケ式ボーン予備");
@@ -163,7 +170,7 @@ namespace ConstraintBones
                     bz.IK.Links.Add(MakeIKLink("頭+"));
 
                     // 頭IK, 頭IK親1の位置調整
-                    var dz = new V3(0, 0, -1f);
+                    var dz = new V3(0, 0, headIKoffset);
                     by.Position += dz;
                     bz.Position += dz;
                 }
@@ -237,6 +244,8 @@ namespace ConstraintBones
                 // PMDView更新
                 connect.View.PMDView.UpdateModel();         // Viewの更新が不要な場合はコメントアウト
                 connect.View.PMDView.UpdateView();
+
+                MessageBox.Show("イジケ式ボーン導入作業が完了しました。", "イジケ式ボーン導入", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
             catch (Exception ex)
             {

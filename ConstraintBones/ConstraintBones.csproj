@@ -35,6 +35,7 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -46,8 +47,19 @@
     <Compile Include="FootConstraintBone.cs" />
     <Compile Include="HandConstraintBone.cs" />
     <Compile Include="IgkBone.cs" />
+    <Compile Include="NumDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="NumDialog.Designer.cs">
+      <DependentUpon>NumDialog.cs</DependentUpon>
+    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="PMXEPlugin.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="NumDialog.resx">
+      <DependentUpon>NumDialog.cs</DependentUpon>
+    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
