@@ -243,5 +243,32 @@ namespace ConstraintBones
             var targetBone = FindBone(targetBoneName);
             if (targetBone != null) AddBoneToNode(targetNode, targetBone);
         }
+        // ボーンを表示枠から削除
+        public void RemoveBoneFromNode(IPXNode targetNode, IPXBone targetBone)
+        {
+            var b = targetNode.Items.FirstOrDefault(ni => ni.IsBone && ni.BoneItem.Bone == targetBone);
+            if (b == null) return;
+            targetNode.Items.Remove(b);
+        }
+        public IPXNode FindNode(string name)
+        {
+            return node.FirstOrDefault(n => n.Name == name);
+        }
+        // [Root]表示枠
+        public IPXNode RootNode
+        {
+            get
+            {
+                return pmx.RootNode;
+            }
+        }
+        // [表情]表示枠
+        public IPXNode ExpressionNode
+        {
+            get
+            {
+                return pmx.ExpressionNode;
+            }
+        }
     }
 }

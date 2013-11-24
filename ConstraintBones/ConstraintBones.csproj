@@ -55,6 +55,7 @@
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="PMXEPlugin.cs" />
+    <Compile Include="RootTurnBone.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="NumDialog.resx">
