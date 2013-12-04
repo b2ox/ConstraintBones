@@ -62,10 +62,18 @@ namespace ConstraintBones
                 RootTurnCtrl.Controllable = true;
                 RootTurnCtrl.Visible = true;
 
-                // 表示枠[Root]へ追加
+                // 表示枠[Root]に全ての親(新)を追加して全親ターン連動を削除
                 AddBoneToNode(RootNode, RootBoneNew);
-                AddBoneToNode(RootNode, RootTurnCtrl);
                 RemoveBoneFromNode(RootNode, RootBoneOrig);
+
+                // 表示枠"センター"に全親ターンを追加
+                var centerNode = FindNode("センター");
+                if (centerNode == null)
+                {
+                    centerNode = MakeNode("センター");
+                    node.Insert(0, centerNode);
+                }
+                InsertBoneToNode(centerNode, RootTurnCtrl, 0);
 
                 //----------------------------------------------
                 // 更新処理
@@ -75,8 +83,7 @@ namespace ConstraintBones
                 connect.Pmx.Update(pmx);
 
                 // Form更新
-                // connect.Form.UpdateList(UpdateObject.All);  // 重い場合は引数を変更して個別に更新
-                connect.Form.UpdateList(UpdateObject.Bone);
+                connect.Form.UpdateList(UpdateObject.All);  // 重い場合は引数を変更して個別に更新
 
                 // PMDView更新
                 connect.View.PMDView.UpdateModel();         // Viewの更新が不要な場合はコメントアウト

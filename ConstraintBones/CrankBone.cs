@@ -38,6 +38,13 @@ namespace ConstraintBones
 
                 if (MessageBox.Show(bone.Name + "にクランクを追加しますか？", "クランク追加プラグイン", MessageBoxButtons.OKCancel) != DialogResult.OK) return;
 
+                float ratio = 39;
+                using (var nd = new NumDialog("付与率", -1000m, 1000m, (decimal)ratio))
+                {
+                    if (nd.ShowDialog() != DialogResult.OK) return;
+                    ratio = (float)nd.Value;
+                }
+
                 var cr = MakeBone("[クランク]" + bone.Name);
                 cr.Parent = bone.Parent;
                 cr.Position = bone.Position;
@@ -57,7 +64,7 @@ namespace ConstraintBones
                 cp.Controllable = false;
                 cp.AppendParent = cr;
                 cp.IsAppendRotation = true;
-                cp.AppendRatio = 39;
+                cp.AppendRatio = ratio;
 
                 cr.ToBone = cp;
                 cp.ToBone = bone;
@@ -74,8 +81,7 @@ namespace ConstraintBones
                 connect.Pmx.Update(pmx);
 
                 // Form更新
-                // connect.Form.UpdateList(UpdateObject.All);  // 重い場合は引数を変更して個別に更新
-                connect.Form.UpdateList(UpdateObject.Bone);
+                connect.Form.UpdateList(UpdateObject.All);  // 重い場合は引数を変更して個別に更新
 
                 // PMDView更新
                 connect.View.PMDView.UpdateModel();         // Viewの更新が不要な場合はコメントアウト

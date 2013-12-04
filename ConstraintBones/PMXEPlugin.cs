@@ -255,6 +255,10 @@ namespace ConstraintBones
             var targetBone = FindBone(targetBoneName);
             if (targetBone != null) AddBoneToNode(targetNode, targetBone);
         }
+        public void InsertBoneToNode(IPXNode targetNode, IPXBone targetBone, int idx)
+        {
+            targetNode.Items.Insert(idx, bdx.BoneNodeItem(targetBone));
+        }
         // ボーンを表示枠から削除
         public void RemoveBoneFromNode(IPXNode targetNode, IPXBone targetBone)
         {
