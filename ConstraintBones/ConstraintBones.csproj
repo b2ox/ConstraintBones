@@ -44,6 +44,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CrankBone.cs" />
     <Compile Include="FootConstraintBone.cs" />
     <Compile Include="HandConstraintBone.cs" />
     <Compile Include="IgkBone.cs" />

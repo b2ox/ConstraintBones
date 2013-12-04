@@ -199,6 +199,18 @@ namespace ConstraintBones
             bx.Visible = false;
             return bx;
         }
+        public IPXBone SelectedBone()
+        {
+            try
+            {
+                return bone[connect.Form.SelectedBoneIndex];
+            }
+            catch
+            {
+
+                return null;
+            }
+        }
         public IPXIKLink MakeIKLink(IPXBone targetBone, V3 low, V3 high)
         {
             return targetBone == null ? null : bdx.IKLink(targetBone, low, high);
