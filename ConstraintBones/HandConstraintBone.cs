@@ -48,20 +48,21 @@ namespace ConstraintBones
                     bone.Remove(bx);
                     InsertBoneBefore(b + "腕ＩＫ", bx);
                 }
-                // 両腕IKボーンの親を手首に設定
-                Set_ParentBone("左腕ＩＫ", "左手首");
-                Set_ParentBone("右腕ＩＫ", "右手首");
+
                 // 手首の多段化
-                foreach (var b in LeftRight)
+                foreach (var lr in LeftRight)
                 {
-                    var bw = FindBone(b + "手首");
-                    if (bw == null) throw new Exception(b + "ボーンが見つかりません");
+                    var bw = FindBone(lr + "手首");
+                    if (bw == null) throw new Exception(lr + "手首ボーンが見つかりません");
+                    var bi = FindBone(lr + "腕ＩＫ");
+                    if (bi == null) throw new Exception(lr + "腕ＩＫボーンが見つかりません");
+                    bi.Parent = bw; // 腕IKボーンの親を手首に設定
 
-                    var bx = FindBone(b + "手首+");
-                    if (bx == null) throw new Exception(b + "ボーンが見つかりません");
+                    var bx = FindBone(lr + "手首+");
+                    if (bx == null) throw new Exception(lr + "手首+ボーンが見つかりません");
 
-                    var by = CloneBone(bx, b + "手首移動用");
-                    var bz = CloneBone(bx, b + "手首回転用");
+                    var by = CloneBone(bx, lr + "手首移動用");
+                    var bz = CloneBone(bx, lr + "手首回転用");
                     bx.ToOffset = new V3(0, 0, 0);
                     bx.ToBone = by;
 
@@ -109,9 +110,9 @@ namespace ConstraintBones
                 connect.Pmx.Update(pmx);
 
                 // Form更新
-                // connect.Form.UpdateList(UpdateObject.All);  // 重い場合は引数を変更して個別に更新
-                connect.Form.UpdateList(UpdateObject.Bone);
-                connect.Form.UpdateList(UpdateObject.Node);
+                connect.Form.UpdateList(UpdateObject.All);  // 重い場合は引数を変更して個別に更新
+                //connect.Form.UpdateList(UpdateObject.Bone);
+                //connect.Form.UpdateList(UpdateObject.Node);
 
                 // PMDView更新
                 connect.View.PMDView.UpdateModel();         // Viewの更新が不要な場合はコメントアウト

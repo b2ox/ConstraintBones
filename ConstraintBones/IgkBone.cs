@@ -177,6 +177,7 @@ namespace ConstraintBones
 
                 // 首を複製し腕連動ボーン,呼吸ボーンを作成
                 // 上半身2←腕連動ボーン←呼吸ボーン←首
+                // 肩の親を呼吸ボーンに変更
                 {
                     var bx = FindBone("首");
                     var by = CloneBone(bx, "腕連動ボーン");
@@ -190,11 +191,10 @@ namespace ConstraintBones
                     bx.Parent = bz;
                     by.IsTranslation = true;
                     bz.IsTranslation = true;
+                    FindBone("左肩").Parent = bz;
+                    FindBone("右肩").Parent = bz;
                 }
 
-                // 肩の親を呼吸ボーンに変更
-                Set_ParentBone("左肩", "呼吸ボーン");
-                Set_ParentBone("右肩", "呼吸ボーン");
 
                 // 頭を複製し回転連動用,頭連動を作成
                 // 首←回転連動用←頭連動←頭
