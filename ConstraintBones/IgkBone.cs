@@ -188,7 +188,7 @@ namespace ConstraintBones
                     AddBoneToNode(nodeX, bz); // 操作枠
                     by.Parent = bx.Parent;
                     bz.Parent = by;
-                    bx.Parent = bz;
+                    bx.Parent = FindBone("上半身2");
                     by.IsTranslation = true;
                     bz.IsTranslation = true;
                     FindBone("左肩").Parent = bz;
