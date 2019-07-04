@@ -1,25 +1,16 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using PEPlugin;
-using PEPlugin.Form;
 using PEPlugin.Pmd;
 using PEPlugin.Pmx;
 using PEPlugin.SDX;
-using PEPlugin.View;
 
 namespace ConstraintBones
 {
     public class IgkBone : PMXEPlugin
     {
         // コンストラクタ
-        public IgkBone()
-            : base()
+        public IgkBone() : base()
         {
             // 起動オプション
             // boot時実行(true/false), プラグインメニューへの登録(true/false), メニュー登録名("")
@@ -45,9 +36,9 @@ namespace ConstraintBones
                 }
 
                 var nodeX = MakeNode("イジケ式ボーン操作用");
-                node.Add(nodeX);
+                Node.Add(nodeX);
                 var nodeY = MakeNode("イジケ式ボーン予備");
-                node.Add(nodeY);
+                Node.Add(nodeY);
 
                 // 腰の多段化
                 var bKoshi = FindBone("腰");
@@ -229,20 +220,20 @@ namespace ConstraintBones
                 InsertBoneBefore("上半身+", MakeSeparatorBone("+++++体幹IK群+++++"));
                 InsertBoneBefore("上半身", MakeSeparatorBone("+++++上半身1・2腕連動・呼吸+++++"));
                 InsertBoneBefore("左肩", MakeSeparatorBone("+++++FK群+++++"));
-                
+
                 //----------------------------------------------
                 // 更新処理
                 // デフォルト設定ではフッタコードはOFF
 
                 // PMX更新
-                connect.Pmx.Update(pmx);
+                Connector.Pmx.Update(PMX);
 
                 // Form更新
-                connect.Form.UpdateList(UpdateObject.All);  // 重い場合は引数を変更して個別に更新
+                Connector.Form.UpdateList(UpdateObject.All);  // 重い場合は引数を変更して個別に更新
 
                 // PMDView更新
-                connect.View.PMDView.UpdateModel();         // Viewの更新が不要な場合はコメントアウト
-                connect.View.PMDView.UpdateView();
+                Connector.View.PMDView.UpdateModel();         // Viewの更新が不要な場合はコメントアウト
+                Connector.View.PMDView.UpdateView();
 
                 MessageBox.Show("イジケ式ボーン導入作業が完了しました。", "イジケ式ボーン導入", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }

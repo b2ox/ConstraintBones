@@ -1,25 +1,15 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using PEPlugin;
-using PEPlugin.Form;
 using PEPlugin.Pmd;
-using PEPlugin.Pmx;
 using PEPlugin.SDX;
-using PEPlugin.View;
 
 namespace ConstraintBones
 {
     public class FootConstraintBone : PMXEPlugin
     {
         // コンストラクタ
-        public FootConstraintBone()
-            : base()
+        public FootConstraintBone() : base()
         {
             // 起動オプション
             // boot時実行(true/false), プラグインメニューへの登録(true/false), メニュー登録名("")
@@ -40,12 +30,9 @@ namespace ConstraintBones
 
                 foreach (var b in LeftRight)
                 {
-                    var bx = FindBone(b + "足");
-                    if (bx == null) throw new Exception(b + "ボーンが見つかりません");
-                    var by = FindBone(b + "ひざ");
-                    if (by == null) throw new Exception(b + "ボーンが見つかりません");
-                    var bz = FindBone(b + "足首");
-                    if (bz == null) throw new Exception(b + "ボーンが見つかりません");
+                    var bx = FindBone(b + "足") ?? throw new Exception(b + "ボーンが見つかりません");
+                    var by = FindBone(b + "ひざ") ?? throw new Exception(b + "ボーンが見つかりません");
+                    var bz = FindBone(b + "足首") ?? throw new Exception(b + "ボーンが見つかりません");
 
                     // 足、ひざ、足首ボーンを複製
                     var bx2 = CloneBone(bx, bx.Name + "+");
@@ -91,9 +78,9 @@ namespace ConstraintBones
                     }
 
                     // ボーンの追加と並べ替え
-                    bone.Remove(bx);
-                    bone.Remove(by);
-                    bone.Remove(bz);
+                    Bone.Remove(bx);
+                    Bone.Remove(by);
+                    Bone.Remove(bz);
                     InsertBoneBefore(bw, bx2);
                     InsertBoneBefore(bw, by2);
                     InsertBoneBefore(bw, bz2);
@@ -108,15 +95,15 @@ namespace ConstraintBones
                 // デフォルト設定ではフッタコードはOFF
 
                 // PMX更新
-                connect.Pmx.Update(pmx);
+                Connector.Pmx.Update(PMX);
 
                 // Form更新
                 // connect.Form.UpdateList(UpdateObject.All);  // 重い場合は引数を変更して個別に更新
-                connect.Form.UpdateList(UpdateObject.Bone);
+                Connector.Form.UpdateList(UpdateObject.Bone);
 
                 // PMDView更新
-                connect.View.PMDView.UpdateModel();         // Viewの更新が不要な場合はコメントアウト
-                connect.View.PMDView.UpdateView();
+                Connector.View.PMDView.UpdateModel();         // Viewの更新が不要な場合はコメントアウト
+                Connector.View.PMDView.UpdateView();
             }
             catch (Exception ex)
             {

@@ -1,25 +1,14 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using PEPlugin;
-using PEPlugin.Form;
 using PEPlugin.Pmd;
-using PEPlugin.Pmx;
-using PEPlugin.SDX;
-using PEPlugin.View;
 
 namespace ConstraintBones
 {
     public class CrankBone : PMXEPlugin
     {
         // コンストラクタ
-        public CrankBone()
-            : base()
+        public CrankBone() : base()
         {
             // 起動オプション
             // boot時実行(true/false), プラグインメニューへの登録(true/false), メニュー登録名("")
@@ -33,8 +22,7 @@ namespace ConstraintBones
             {
                 InitVariables(args);
 
-                var bone = SelectedBone();
-                if (bone == null) throw new Exception("ボーンが選択されていません");
+                var bone = SelectedBone() ?? throw new Exception("ボーンが選択されていません");
 
                 if (MessageBox.Show(bone.Name + "にクランクを追加しますか？", "クランク追加プラグイン", MessageBoxButtons.OKCancel) != DialogResult.OK) return;
 
@@ -78,14 +66,14 @@ namespace ConstraintBones
                 // デフォルト設定ではフッタコードはOFF
 
                 // PMX更新
-                connect.Pmx.Update(pmx);
+                Connector.Pmx.Update(PMX);
 
                 // Form更新
-                connect.Form.UpdateList(UpdateObject.All);  // 重い場合は引数を変更して個別に更新
+                Connector.Form.UpdateList(UpdateObject.All);  // 重い場合は引数を変更して個別に更新
 
                 // PMDView更新
-                connect.View.PMDView.UpdateModel();         // Viewの更新が不要な場合はコメントアウト
-                connect.View.PMDView.UpdateView();
+                Connector.View.PMDView.UpdateModel();         // Viewの更新が不要な場合はコメントアウト
+                Connector.View.PMDView.UpdateView();
 
                 MessageBox.Show(
                     "[クランク]" + bone.Name + "及び\n" + "[クランク+]" + bone.Name + "の\n位置などを適宜調整してください",

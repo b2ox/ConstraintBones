@@ -1,14 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data;
-using System.Drawing;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
 using PEPlugin;
-using PEPlugin.Form;
-using PEPlugin.Pmd;
 using PEPlugin.Pmx;
 using PEPlugin.SDX;
 using PEPlugin.View;
@@ -25,48 +18,48 @@ namespace ConstraintBones
             m_option = new PEPluginOption(false, false, "");
         }
 
-        protected IPEPluginHost host;
-        protected IPEBuilder builder;
-        protected IPEShortBuilder bd;
-        protected IPXPmxBuilder bdx;
-        protected IPEConnector connect;
-        protected IPEPMDViewConnector view;
+        protected IPEPluginHost Host;
+        protected IPEBuilder Builder;
+        protected IPEShortBuilder BD;
+        protected IPXPmxBuilder BDX;
+        protected IPEConnector Connector;
+        protected IPEPMDViewConnector View;
 
         // PMX関連
-        protected IPXPmx pmx;
-        protected IPXHeader header;
-        protected IPXModelInfo info;
-        protected IList<IPXVertex> vertex;
-        protected IList<IPXMaterial> material;
-        protected IList<IPXBone> bone;
-        protected IList<IPXMorph> morph;
-        protected IList<IPXNode> node;
-        protected IList<IPXBody> body;
-        protected IList<IPXJoint> joint;
+        protected IPXPmx PMX;
+        protected IPXHeader Header;
+        protected IPXModelInfo Info;
+        protected IList<IPXVertex> Vertex;
+        protected IList<IPXMaterial> Material;
+        protected IList<IPXBone> Bone;
+        protected IList<IPXMorph> Morph;
+        protected IList<IPXNode> Node;
+        protected IList<IPXBody> Body;
+        protected IList<IPXJoint> Joint;
 
         public void InitVariables(IPERunArgs args)
         {
             // 常用接続変数一括登録
 
             // ホスト配下
-            host = args.Host;
-            builder = host.Builder;
-            bd = builder.SC;		// 短絡系ビルダ
-            bdx = builder.Pmx;		// PMXビルダ
-            connect = host.Connector;
-            view = connect.View.PMDView;
+            Host = args.Host;
+            Builder = Host.Builder;
+            BD = Builder.SC;		// 短絡系ビルダ
+            BDX = Builder.Pmx;		// PMXビルダ
+            Connector = Host.Connector;
+            View = Connector.View.PMDView;
 
             // PMX関連
-            pmx = connect.Pmx.GetCurrentState();     // PMX取得
-            header = pmx.Header;                  // header   :ヘッダ
-            info = pmx.ModelInfo;              // info     :モデル情報
-            vertex = pmx.Vertex;           // vertex   :頂点   | リスト
-            material = pmx.Material;     // material :材質   | リスト
-            bone = pmx.Bone;                 // bone     :ボーン | リスト
-            morph = pmx.Morph;				// morph    :モーフ | リスト
-            node = pmx.Node;					// node     :表示枠 | リスト
-            body = pmx.Body;                 // body     :剛体   | リスト
-            joint = pmx.Joint;              // joint    :Joint  | リスト
+            PMX = Connector.Pmx.GetCurrentState(); // PMX取得
+            Header = PMX.Header;                   // Header   :ヘッダ
+            Info = PMX.ModelInfo;                  // Info     :モデル情報
+            Vertex = PMX.Vertex;                   // Vertex   :頂点   | リスト
+            Material = PMX.Material;               // Material :材質   | リスト
+            Bone = PMX.Bone;                       // Bone     :ボーン | リスト
+            Morph = PMX.Morph;				       // Morph    :モーフ | リスト
+            Node = PMX.Node;					   // Node     :表示枠 | リスト
+            Body = PMX.Body;                       // Body     :剛体   | リスト
+            Joint = PMX.Joint;                     // Joint    :Joint  | リスト
         }
 
         //---------------------------------------------------------------------
@@ -75,19 +68,19 @@ namespace ConstraintBones
         // ボーンの存在チェック
         public bool ExistsBone(string name)
         {
-            return bone.Any(b => b.Name == name);
+            return Bone.Any(b => b.Name == name);
         }
         // ボーンを名前で取得(見つからない時はnullを返す)
         public IPXBone FindBone(string name)
         {
-            return bone.FirstOrDefault(b => b.Name == name);
+            return Bone.FirstOrDefault(b => b.Name == name);
         }
         // ボーンを名前で取得(見つからない時は例外発生)
         public IPXBone FindBoneEx(string name)
         {
             try
             {
-                return bone.First(b => b.Name == name);
+                return Bone.First(b => b.Name == name);
             }
             catch
             {
@@ -97,7 +90,7 @@ namespace ConstraintBones
         // ボーンを作成
         public IPXBone MakeBone(string boneName)
         {
-            var bx = bdx.Bone();
+            var bx = BDX.Bone();
             bx.Name = boneName;
             return bx;
         }
@@ -111,7 +104,7 @@ namespace ConstraintBones
             return bx;
         }
         // 新しい名前でボーンを複製
-        public IPXBone CloneBone(IPXBone origBone, string newName)
+        public static IPXBone CloneBone(IPXBone origBone, string newName)
         {
             var bx = (IPXBone)origBone.Clone();
             bx.Name = newName;
@@ -130,31 +123,30 @@ namespace ConstraintBones
         {
             try
             {
-                return bone[connect.Form.SelectedBoneIndex];
+                return Bone[Connector.Form.SelectedBoneIndex];
             }
             catch
             {
-
                 return null;
             }
         }
         // 選択されたボーン配列を取得
         public IPXBone[] SelectedBones()
         {
-            var bi = connect.View.PmxView.GetSelectedBoneIndices();
+            var bi = Connector.View.PmxView.GetSelectedBoneIndices();
             if (bi.Length == 0) return null;
             var ret = new IPXBone[bi.Length];
-            for (var i = 0; i < bi.Length; i++) ret[i] = bone[bi[i]];
+            for (var i = 0; i < bi.Length; i++) ret[i] = Bone[bi[i]];
             return ret;
         }
         // targetBoneの直前にnewBoneを挿入
         // 返り値は挿入できたかどうか
         public bool InsertBoneBefore(IPXBone targetBone, IPXBone newBone)
         {
-            for (var i = 0; i < bone.Count; i++)
+            for (var i = 0; i < Bone.Count; i++)
             {
-                if (bone[i] != targetBone) continue;
-                bone.Insert(i, newBone);
+                if (Bone[i] != targetBone) continue;
+                Bone.Insert(i, newBone);
                 return true;
             }
             return false;
@@ -169,10 +161,10 @@ namespace ConstraintBones
         // 返り値は挿入できたかどうか
         public bool InsertBoneAfter(IPXBone targetBone, IPXBone newBone)
         {
-            for (var i = 0; i < bone.Count; i++)
+            for (var i = 0; i < Bone.Count; i++)
             {
-                if (bone[i] != targetBone) continue;
-                bone.Insert(i + 1, newBone);
+                if (Bone[i] != targetBone) continue;
+                Bone.Insert(i + 1, newBone);
                 return true;
             }
             return false;
@@ -187,7 +179,7 @@ namespace ConstraintBones
         // 返り値は移動できたかどうか
         public bool MoveBoneBefore(IPXBone targetBone, IPXBone movingBone)
         {
-            bone.Remove(movingBone);
+            Bone.Remove(movingBone);
             return InsertBoneBefore(targetBone, movingBone);
         }
         public bool MoveBoneBefore(string targetBoneName, string movingBoneName)
@@ -202,7 +194,7 @@ namespace ConstraintBones
         // 返り値は移動できたかどうか
         public bool MoveBoneAfter(IPXBone targetBone, IPXBone movingBone)
         {
-            bone.Remove(movingBone);
+            Bone.Remove(movingBone);
             return InsertBoneAfter(targetBone, movingBone);
         }
         public bool MoveBoneAfter(string targetBoneName, string movingBoneName)
@@ -246,12 +238,12 @@ namespace ConstraintBones
         // targetBone(制限角low～high)のIKLinkを作成
         public IPXIKLink MakeIKLink(IPXBone targetBone, V3 low, V3 high)
         {
-            return targetBone == null ? null : bdx.IKLink(targetBone, low, high);
+            return targetBone == null ? null : BDX.IKLink(targetBone, low, high);
         }
         // targetBoneのIKLinkを作成
         public IPXIKLink MakeIKLink(IPXBone targetBone)
         {
-            return targetBone == null ? null : bdx.IKLink(targetBone);
+            return targetBone == null ? null : BDX.IKLink(targetBone);
         }
         public IPXIKLink MakeIKLink(string targetBoneName, V3 low, V3 high)
         {
@@ -268,14 +260,14 @@ namespace ConstraintBones
         // 名前から表示枠を取得
         public IPXNode FindNode(string name)
         {
-            return node.FirstOrDefault(n => n.Name == name);
+            return Node.FirstOrDefault(n => n.Name == name);
         }
         // [Root]表示枠
         public IPXNode RootNode
         {
             get
             {
-                return pmx.RootNode;
+                return PMX.RootNode;
             }
         }
         // [表情]表示枠
@@ -283,20 +275,20 @@ namespace ConstraintBones
         {
             get
             {
-                return pmx.ExpressionNode;
+                return PMX.ExpressionNode;
             }
         }
         // 表示枠の作成
         public IPXNode MakeNode(string nodeName)
         {
-            var nd = bdx.Node();
+            var nd = BDX.Node();
             nd.Name = nodeName;
             return nd;
         }
         // ボーンを表示枠に追加
         public void AddBoneToNode(IPXNode targetNode, IPXBone targetBone)
         {
-            targetNode.Items.Add(bdx.BoneNodeItem(targetBone));
+            targetNode.Items.Add(BDX.BoneNodeItem(targetBone));
         }
         public void AddBoneToNode(IPXNode targetNode, string targetBoneName)
         {
@@ -306,7 +298,7 @@ namespace ConstraintBones
         // ボーンを表示枠に挿入
         public void InsertBoneToNode(IPXNode targetNode, IPXBone targetBone, int idx)
         {
-            targetNode.Items.Insert(idx, bdx.BoneNodeItem(targetBone));
+            targetNode.Items.Insert(idx, BDX.BoneNodeItem(targetBone));
         }
         // ボーンを表示枠から削除
         public void RemoveBoneFromNode(IPXNode targetNode, IPXBone targetBone)
